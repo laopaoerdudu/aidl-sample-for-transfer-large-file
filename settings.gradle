@@ -1,0 +1,2 @@
+rootProject.name = "aidl-sample-for-transfer-large-file"
+include ':app'
