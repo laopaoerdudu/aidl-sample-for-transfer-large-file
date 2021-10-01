@@ -1,4 +1,4 @@
-// ImageManager.aidl
+// DataManager.aidl
 package com.dev;
 import com.dev.ICallback;
 
