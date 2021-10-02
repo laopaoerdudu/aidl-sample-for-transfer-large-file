@@ -23,7 +23,7 @@
             android:exported="false"
             android:process=":remote">
             <intent-filter>
-                <action android:name="com.dev.server.AIDLService" />
+                <action android:name="com.dev.AIDLService" />
             </intent-filter>
         </service>
 
