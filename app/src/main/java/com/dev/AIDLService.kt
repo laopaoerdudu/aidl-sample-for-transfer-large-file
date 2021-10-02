@@ -1,4 +1,4 @@
-package com.dev.server
+package com.dev
 
 import android.app.Service
 import android.content.Intent
@@ -7,11 +7,11 @@ import android.os.Message
 import android.os.ParcelFileDescriptor
 import android.os.RemoteCallbackList
 import android.util.Log
-import com.dev.DataManager
-import com.dev.ICallback
 import java.io.FileInputStream
 
 class AIDLService : Service() {
+    private var sendDataCallback: ((ParcelFileDescriptor) -> Unit)? = null
+
     private val callbackList = RemoteCallbackList<ICallback>()
     private val binder = object : DataManager.Stub() {
         override fun sendImage(data: ByteArray?) {
@@ -43,6 +43,9 @@ class AIDLService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("WWE", "AIDLService #onCreate invoked")
+        sendDataCallback = {
+            sendDataToClient(it)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
