@@ -1,4 +1,4 @@
-package com.dev
+package com.dev.util
 
 import android.content.Context
 import java.io.ByteArrayOutputStream

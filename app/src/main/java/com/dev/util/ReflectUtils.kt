@@ -1,4 +1,4 @@
-package com.dev
+package com.dev.util
 
 class ReflectUtils {
     companion object {
