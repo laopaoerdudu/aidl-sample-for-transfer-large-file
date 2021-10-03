@@ -10,36 +10,40 @@ import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatImageView
+import com.dev.util.AssetUtils
 import com.dev.util.ReflectUtils
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     private lateinit var ivIcon: AppCompatImageView
     private var dataManager: DataManager? = null
 
+    private val callback = object : ICallback.Stub() {
+        override fun serveSendDataToClient(pfd: ParcelFileDescriptor?) {
+            Log.i("WWE", "MainActivity #serveSendDataToClient invoked!")
+            val fis = FileInputStream(pfd?.fileDescriptor)
+            val bytes = fis.readBytes()
+            if (bytes.isNotEmpty()) {
+                runOnUiThread {
+                    ivIcon.setImageBitmap(
+                        BitmapFactory.decodeByteArray(
+                            bytes,
+                            0,
+                            bytes.size
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, binder: IBinder?) {
             dataManager = DataManager.Stub.asInterface(binder)
-            dataManager?.registerCallback(object : ICallback.Stub() {
-                override fun serveSendDataToClient(pfd: ParcelFileDescriptor?) {
-                    Log.i("WWE", "MainActivity #serveSendDataToClient invoked!")
-                    val fis = FileInputStream(pfd?.fileDescriptor)
-                    val bytes = fis.readBytes()
-                    if (bytes.isNotEmpty()) {
-                        runOnUiThread {
-                            ivIcon.setImageBitmap(
-                                BitmapFactory.decodeByteArray(
-                                    bytes,
-                                    0,
-                                    bytes.size
-                                )
-                            )
-                        }
-                    }
-                }
-            })
+            dataManager?.registerCallback(callback)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -63,8 +67,8 @@ class MainActivity : AppCompatActivity() {
                 dataManager?.clientSendDataToServer(
                     ParcelFileDescriptor.dup(
                         ReflectUtils.invoke(
-                            "android.os.MemoryFile",
                             memoryFile,
+                            "android.os.MemoryFile",
                             "getFileDescriptor"
                         ) as? FileDescriptor
                     )
@@ -75,5 +79,20 @@ class MainActivity : AppCompatActivity() {
                 ex.printStackTrace()
             }
         }
+        findViewById<Button>(R.id.btnSendSmallImageToServer).setOnClickListener {
+            try {
+                dataManager?.sendImage(AssetUtils.openAssets(this, "small.jpg"))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            } catch (ex: RemoteException) {
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        dataManager?.unregisterCallback(callback)
+        unbindService(serviceConnection)
+        super.onDestroy()
     }
 }
