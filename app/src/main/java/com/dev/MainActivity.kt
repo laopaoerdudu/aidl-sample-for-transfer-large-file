@@ -11,7 +11,7 @@ import android.util.Log
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatImageView
 import com.dev.util.AssetUtils
-import com.dev.util.ReflectUtils
+import com.dev.util.ReflectUtil
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.IOException
@@ -64,13 +64,15 @@ class MainActivity : AppCompatActivity() {
                 val memoryFile = MemoryFile("client_image", byteArray.size).apply {
                     writeBytes(byteArray, 0, 0, byteArray.size)
                 }
+                val fileDescriptor = ReflectUtil.invoke(
+                    memoryFile,
+                    "android.os.MemoryFile",
+                    "getFileDescriptor"
+                ) as? FileDescriptor
+
                 dataManager?.clientSendDataToServer(
                     ParcelFileDescriptor.dup(
-                        ReflectUtils.invoke(
-                            memoryFile,
-                            "android.os.MemoryFile",
-                            "getFileDescriptor"
-                        ) as? FileDescriptor
+                        fileDescriptor
                     )
                 )
             } catch (ex: IOException) {
