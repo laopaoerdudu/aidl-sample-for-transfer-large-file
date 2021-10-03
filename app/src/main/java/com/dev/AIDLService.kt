@@ -16,9 +16,8 @@ class AIDLService : Service() {
         }
 
         override fun clientSendDataToServer(pfd: ParcelFileDescriptor?) {
-            val data: ByteArray? = FileInputStream(pfd?.fileDescriptor).readBytes()
-            Log.i("WWE", "AIDLService #clientSendDataToServer -> data -> $data")
             sendDataCallback?.invoke(pfd)
+            Log.i("WWE", "AIDLService #clientSendDataToServer -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}")
         }
 
         override fun registerCallback(callback: ICallback?) {
