@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceiveBigData(pfd: ParcelFileDescriptor?) {
             val bytes = FileInputStream(pfd?.fileDescriptor).readBytes()
             if (bytes.isNotEmpty()) {
-                Log.i("WWE", "MainActivity #onReceiveLargeData setImageBitmap >>>")
+                Log.i("WWE", "MainActivity #onReceiveBigData setImageBitmap >>>")
                 runOnUiThread {
                     ivIcon.setImageBitmap(
                         BitmapFactory.decodeByteArray(

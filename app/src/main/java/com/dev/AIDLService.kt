@@ -17,7 +17,7 @@ class AIDLService : Service() {
 
         override fun sendBigData(pfd: ParcelFileDescriptor?) {
             sendDataCallback?.invoke(pfd)
-            Log.i("WWE", "AIDLService #sendLargeData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}")
+            Log.i("WWE", "AIDLService #sendBigData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}")
         }
 
         override fun registerCallback(callback: BigDataCallback?) {
