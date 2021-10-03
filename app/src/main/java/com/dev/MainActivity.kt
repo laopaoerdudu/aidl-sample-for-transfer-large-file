@@ -38,11 +38,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    private val smallDataCallback = object : SmallDataCallback.Stub() {
+        override fun onReceiveSmallData(data: ByteArray?) {
+            data?.let { bytes ->
+                Log.i("WWE", "MainActivity #onReceiveSmallData setImageBitmap >>>")
+                runOnUiThread {
+                    ivIcon.setImageBitmap(
+                        BitmapFactory.decodeByteArray(
+                            bytes,
+                            0,
+                            bytes.size
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, binder: IBinder?) {
             dataManager = DataManager.Stub.asInterface(binder)
-            dataManager?.registerCallback(bigDataCallback)
+            dataManager?.registerCallback(bigDataCallback, smallDataCallback)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -81,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.btnSendSmallImageToServer).setOnClickListener {
             try {
-                dataManager?.sendData(AssetUtils.openAssets(this, "small.jpg"))
+                dataManager?.sendSmallData(AssetUtils.openAssets(this, "small.jpg"))
             } catch (ex: Exception) {
                 ex.printStackTrace()
             } catch (ex: RemoteException) {
@@ -91,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        dataManager?.unregisterCallback(bigDataCallback)
+        dataManager?.unregisterCallback(bigDataCallback, smallDataCallback)
         unbindService(serviceConnection)
         super.onDestroy()
     }
