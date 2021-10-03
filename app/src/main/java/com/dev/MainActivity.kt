@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ivIcon: AppCompatImageView
     private var dataManager: DataManager? = null
 
-    private val callback = object : ICallback.Stub() {
-        override fun serveSendDataToClient(pfd: ParcelFileDescriptor?) {
+    private val callback = object : DataCallback.Stub() {
+        override fun onReceiveLargeData(pfd: ParcelFileDescriptor?) {
             val bytes = FileInputStream(pfd?.fileDescriptor).readBytes()
             if (bytes.isNotEmpty()) {
                 Log.i("WWE", "MainActivity #serveSendDataToClient setImageBitmap >>>")
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             setClassName("com.dev", "com.dev.AIDLService")
         }, serviceConnection, Context.BIND_AUTO_CREATE)
         ivIcon = findViewById(R.id.ivIcon)
-        findViewById<Button>(R.id.btnSendImageToServer).setOnClickListener {
+        findViewById<Button>(R.id.btnSendLargeImageToServer).setOnClickListener {
             try {
                 val byteArray = assets.open("large.jpg").readBytes()
                 val memoryFile = MemoryFile("client_image", byteArray.size).apply {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     "android.os.MemoryFile",
                     "getFileDescriptor"
                 ) as? FileDescriptor
-                dataManager?.clientSendDataToServer(
+                dataManager?.sendLargeData(
                     ParcelFileDescriptor.dup(
                         fileDescriptor
                     )
