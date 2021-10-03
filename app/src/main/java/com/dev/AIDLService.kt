@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.*
 import android.util.Log
+import java.io.FileInputStream
 
 class AIDLService : Service() {
     private var sendDataCallback: ((ParcelFileDescriptor?) -> Unit)? = null
@@ -11,12 +12,12 @@ class AIDLService : Service() {
 
     private val binder = object : DataManager.Stub() {
         override fun sendImage(data: ByteArray?) {
-            Log.i("WWE", "AIDLService #sendImage invoked!")
+            Log.i("WWE", "AIDLService #sendImage data -> $data")
         }
 
         override fun clientSendDataToServer(pfd: ParcelFileDescriptor?) {
-            Log.i("WWE", "AIDLService #clientSendDataToServer invoked!")
-            //val data: ByteArray? = FileInputStream(pfd?.fileDescriptor).readBytes()
+            val data: ByteArray? = FileInputStream(pfd?.fileDescriptor).readBytes()
+            Log.i("WWE", "AIDLService #clientSendDataToServer -> data -> $data")
             sendDataCallback?.invoke(pfd)
         }
 
@@ -57,7 +58,6 @@ class AIDLService : Service() {
         super.onDestroy()
     }
 
-    // 发送数据到客户端
     private fun sendDataToClient(pfd: ParcelFileDescriptor?) {
         for (i in 0 until callbackList.beginBroadcast()) {
             try {
