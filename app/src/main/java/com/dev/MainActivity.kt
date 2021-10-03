@@ -23,10 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     private val callback = object : ICallback.Stub() {
         override fun serveSendDataToClient(pfd: ParcelFileDescriptor?) {
-            Log.i("WWE", "MainActivity #serveSendDataToClient invoked!")
-            val fis = FileInputStream(pfd?.fileDescriptor)
-            val bytes = fis.readBytes()
+            val bytes = FileInputStream(pfd?.fileDescriptor).readBytes()
             if (bytes.isNotEmpty()) {
+                Log.i("WWE", "MainActivity #serveSendDataToClient setImageBitmap >>>")
                 runOnUiThread {
                     ivIcon.setImageBitmap(
                         BitmapFactory.decodeByteArray(
@@ -69,7 +68,6 @@ class MainActivity : AppCompatActivity() {
                     "android.os.MemoryFile",
                     "getFileDescriptor"
                 ) as? FileDescriptor
-
                 dataManager?.clientSendDataToServer(
                     ParcelFileDescriptor.dup(
                         fileDescriptor
@@ -83,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.btnSendSmallImageToServer).setOnClickListener {
             try {
-                dataManager?.sendImage(AssetUtils.openAssets(this, "small.jpg"))
+                dataManager?.sendData(AssetUtils.openAssets(this, "small.jpg"))
             } catch (ex: Exception) {
                 ex.printStackTrace()
             } catch (ex: RemoteException) {

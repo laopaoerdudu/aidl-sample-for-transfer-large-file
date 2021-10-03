@@ -11,8 +11,8 @@ class AIDLService : Service() {
     private val callbackList = RemoteCallbackList<ICallback>()
 
     private val binder = object : DataManager.Stub() {
-        override fun sendImage(data: ByteArray?) {
-            Log.i("WWE", "AIDLService #sendImage data -> $data")
+        override fun sendData(data: ByteArray?) {
+            Log.i("WWE", "AIDLService #sendData data -> $data")
         }
 
         override fun clientSendDataToServer(pfd: ParcelFileDescriptor?) {
