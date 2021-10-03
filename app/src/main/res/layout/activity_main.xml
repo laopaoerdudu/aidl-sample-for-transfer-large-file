@@ -45,7 +45,7 @@
             android:id="@+id/ivIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintDimensionRatio="H,4:1" />
+            app:layout_constraintDimensionRatio="H,16:9" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
