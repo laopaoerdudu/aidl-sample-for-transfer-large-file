@@ -8,23 +8,23 @@ import java.io.FileInputStream
 
 class AIDLService : Service() {
     private var sendDataCallback: ((ParcelFileDescriptor?) -> Unit)? = null
-    private val callbackList = RemoteCallbackList<DataCallback>()
+    private val callbackList = RemoteCallbackList<BigDataCallback>()
 
     private val binder = object : DataManager.Stub() {
         override fun sendData(data: ByteArray?) {
             Log.i("WWE", "AIDLService #sendData data -> $data")
         }
 
-        override fun sendLargeData(pfd: ParcelFileDescriptor?) {
+        override fun sendBigData(pfd: ParcelFileDescriptor?) {
             sendDataCallback?.invoke(pfd)
             Log.i("WWE", "AIDLService #sendLargeData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}")
         }
 
-        override fun registerCallback(callback: DataCallback?) {
+        override fun registerCallback(callback: BigDataCallback?) {
             callbackList.register(callback)
         }
 
-        override fun unregisterCallback(callback: DataCallback?) {
+        override fun unregisterCallback(callback: BigDataCallback?) {
             callbackList.unregister(callback)
         }
     }
@@ -60,7 +60,7 @@ class AIDLService : Service() {
     private fun sendDataToClient(pfd: ParcelFileDescriptor?) {
         for (i in 0 until callbackList.beginBroadcast()) {
             try {
-                callbackList.getBroadcastItem(i)?.onReceiveLargeData(pfd)
+                callbackList.getBroadcastItem(i)?.onReceiveBigData(pfd)
             } catch (ex: RemoteException) {
                 ex.printStackTrace()
             }

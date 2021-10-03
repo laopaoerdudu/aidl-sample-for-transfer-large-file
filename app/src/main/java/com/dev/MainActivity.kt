@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ivIcon: AppCompatImageView
     private var dataManager: DataManager? = null
 
-    private val callback = object : DataCallback.Stub() {
-        override fun onReceiveLargeData(pfd: ParcelFileDescriptor?) {
+    private val bigDataCallback = object : BigDataCallback.Stub() {
+        override fun onReceiveBigData(pfd: ParcelFileDescriptor?) {
             val bytes = FileInputStream(pfd?.fileDescriptor).readBytes()
             if (bytes.isNotEmpty()) {
                 Log.i("WWE", "MainActivity #onReceiveLargeData setImageBitmap >>>")
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, binder: IBinder?) {
             dataManager = DataManager.Stub.asInterface(binder)
-            dataManager?.registerCallback(callback)
+            dataManager?.registerCallback(bigDataCallback)
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                     "android.os.MemoryFile",
                     "getFileDescriptor"
                 ) as? FileDescriptor
-                dataManager?.sendLargeData(
+                dataManager?.sendBigData(
                     ParcelFileDescriptor.dup(
                         fileDescriptor
                     )
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        dataManager?.unregisterCallback(callback)
+        dataManager?.unregisterCallback(bigDataCallback)
         unbindService(serviceConnection)
         super.onDestroy()
     }

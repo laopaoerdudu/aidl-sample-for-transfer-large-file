@@ -1,10 +1,10 @@
 // DataManager.aidl
 package com.dev;
-import com.dev.DataCallback;
+import com.dev.BigDataCallback;
 
 interface DataManager {
     void sendData(in byte[]data);
-    void sendLargeData(in ParcelFileDescriptor pfd);
-    void registerCallback(DataCallback callback);
-    void unregisterCallback(DataCallback callback);
+    void sendBigData(in ParcelFileDescriptor pfd);
+    void registerCallback(BigDataCallback callback);
+    void unregisterCallback(BigDataCallback callback);
 }
