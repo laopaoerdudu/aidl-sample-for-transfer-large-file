@@ -2,33 +2,20 @@ package com.dev
 
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
-import android.os.Message
-import android.os.ParcelFileDescriptor
-import android.os.RemoteCallbackList
+import android.os.*
 import android.util.Log
 import java.io.FileInputStream
 
 class AIDLService : Service() {
     private var sendDataCallback: ((ParcelFileDescriptor) -> Unit)? = null
-
     private val callbackList = RemoteCallbackList<ICallback>()
+
     private val binder = object : DataManager.Stub() {
         override fun sendImage(data: ByteArray?) {
-            Message.obtain().apply {
-                what = 1
-                obj = data
-            }
         }
 
         override fun clientSendDataToServer(pfd: ParcelFileDescriptor?) {
-            // 从 ParcelFileDescriptor 中获取 FileDescriptor
-            val fileDescriptor = pfd?.fileDescriptor
-            val data = FileInputStream(fileDescriptor).readBytes()
-            Message.obtain().apply {
-                what = 1
-                obj = data
-            }
+            val data: ByteArray? = FileInputStream(pfd?.fileDescriptor).readBytes()
         }
 
         override fun registerCallback(callback: ICallback?) {
@@ -73,7 +60,7 @@ class AIDLService : Service() {
         for (i in 0 until callbackList.beginBroadcast()) {
             try {
                 callbackList.getBroadcastItem(i)?.serveSendDataToClient(pfd)
-            } catch (ex: Exception) {
+            } catch (ex: RemoteException) {
                 ex.printStackTrace()
             }
         }
