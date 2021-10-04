@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceiveBigData(pfd: ParcelFileDescriptor?) {
             val bytes = FileInputStream(pfd?.fileDescriptor).readBytes()
             if (bytes.isNotEmpty()) {
-                Log.i("WWE", "MainActivity #onReceiveBigData setImageBitmap >>>")
+                Log.i("WWE", "[ ${Thread.currentThread().name} ]: MainActivity #onReceiveBigData setImageBitmap >>>")
                 runOnUiThread {
                     ivIcon.setImageBitmap(
                         BitmapFactory.decodeByteArray(
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val smallDataCallback = object : SmallDataCallback.Stub() {
         override fun onReceiveSmallData(data: ByteArray?) {
             data?.let { bytes ->
-                Log.i("WWE", "MainActivity #onReceiveSmallData setImageBitmap >>>")
+                Log.i("WWE", "[ ${Thread.currentThread().name} ]: MainActivity #onReceiveSmallData setImageBitmap >>>")
                 runOnUiThread {
                     ivIcon.setImageBitmap(
                         BitmapFactory.decodeByteArray(

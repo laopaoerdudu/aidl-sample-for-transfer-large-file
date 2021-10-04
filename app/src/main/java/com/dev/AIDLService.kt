@@ -18,14 +18,14 @@ class AIDLService : Service() {
     private val binder = object : DataManager.Stub() {
         override fun sendSmallData(data: ByteArray?) {
             smallDataHandle?.invoke(data)
-            Log.i("WWE", "AIDLService #sendSmallData data -> $data")
+            Log.i("WWE", "[ ${Thread.currentThread().name} ]: AIDLService #sendSmallData data -> $data")
         }
 
         override fun sendBigData(pfd: ParcelFileDescriptor?) {
             bigDataHandle?.invoke(pfd)
             Log.i(
                 "WWE",
-                "AIDLService #sendBigData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}"
+                "[ ${Thread.currentThread().name} ]: AIDLService #sendBigData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}"
             )
         }
 
