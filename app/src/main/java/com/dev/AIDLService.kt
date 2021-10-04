@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock
 
 class AIDLService : Service() {
     private val lock = ReentrantLock()
-    private var largeDataHandle: ((ParcelFileDescriptor?) -> Unit)? = null
+    private var bigDataHandle: ((ParcelFileDescriptor?) -> Unit)? = null
     private var smallDataHandle: ((ByteArray?) -> Unit)? = null
     private val remoteCallbackList = RemoteCallbackList<IInterface>()
 
@@ -22,7 +22,7 @@ class AIDLService : Service() {
         }
 
         override fun sendBigData(pfd: ParcelFileDescriptor?) {
-            largeDataHandle?.invoke(pfd)
+            bigDataHandle?.invoke(pfd)
             Log.i(
                 "WWE",
                 "AIDLService #sendBigData -> data -> ${FileInputStream(pfd?.fileDescriptor).readBytes()}"
@@ -54,7 +54,7 @@ class AIDLService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("WWE", "AIDLService #onCreate invoked")
-        largeDataHandle = {
+        bigDataHandle = {
             sendDataToClient(it, null)
         }
         smallDataHandle = {
