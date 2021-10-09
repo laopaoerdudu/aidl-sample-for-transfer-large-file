@@ -11,5 +11,5 @@
 
 - `DeathRecipient`
 
-
+[Android跨进程传大图思考及实现——附上原理分析](https://juejin.cn/post/7011276367308750879)
 
